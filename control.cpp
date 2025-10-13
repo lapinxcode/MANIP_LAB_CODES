@@ -66,9 +66,19 @@ int main(int argc, char ** argv)
         {
             // follow a given operational velocity
             v = robot->guiVelocityScrew();
+            vpColVector fVe(6);
 
-            // TODO: fill the fJw function
+            // Exercise 2
+            // DONE: fill the fJw function
             // TODO: compute vCommand
+
+            auto fRe = M.getRotationMatrix();
+
+            // Build fVe
+            ecn::putAt(fVe,(fRe*v.extract(0,3)),0);
+            ecn::putAt(fVe,(fRe*v.extract(3,3)),3);
+
+            vCommand = robot->fJe(q).pseudoInverse() * fVe;
 
             robot->setJointVelocity(vCommand);
         }
