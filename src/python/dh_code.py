@@ -440,6 +440,9 @@ def ComputeDK_J(T, u, prism, comp_all = False):
         else:
             T0.append(simp_matrix(T0[-1]*T[i]))
         print('  T %i/0' % (i+1))
+        #print(T0)
+        #print('M %i to next one' % i)
+        print(T[i])
         
     # Jacobian
     # Rotation of each frame to go to frame 0

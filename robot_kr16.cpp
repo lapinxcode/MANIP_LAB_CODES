@@ -70,14 +70,53 @@ vpColVector ecn::RobotKr16::inverseGeometry(const vpHomogeneousMatrix &Md, const
 {
   // desired wrist position
   const auto [tx,ty,tz] = explodeTranslation(Md);
+  vpRotationMatrix R03;
 
-  // first solve position for (q1,q2,q3)
+  auto q1 = atan2(-ty,tx);
+  //const auto c1{cos(q1)};
+  const auto s1{sin(q1)};
 
+  // first solve position for (q1,q2,q3).
+  for(auto [q2,q23] : solveType7(-0.67,0.035,(-ty/s1)-0.26,-tz+0.675,0.68,0)){
 
+      const auto q3 = q23 - q2;
+      //const auto c2{cos(q2)};
+      //const auto s2{sin(q2)};
+      //const auto c3{cos(q3)};
+      //const auto s3{sin(q3)};
 
-  // then (inside the last for block) build R36 and solve it for (q4,q5,q6)
+      const auto c1{cos(q1)};
+      const auto c23{cos(q2+q3)};
+      const auto s1{sin(q1)};
+      const auto s23{sin(q2+q3)};
 
+      // then (inside the last for block) build R36 and solve it for (q4,q5,q6)
 
+      R03[0][0] = -s23*c1;
+      R03[0][1] = -c1*c23;
+      R03[0][2] = s1;
+      R03[1][0] = s1*s23;
+      R03[1][1] = s1*c23;
+      R03[1][2] = c1;
+      R03[2][0] = -c23;
+      R03[2][1] = s23;
+      R03[2][2] = 0;
+
+      // Elements of 3R6
+      const auto [xx,xy,xz,yx,yy,yz,zx,zy,zz] = explodeWristMatrix(Md, R03);
+
+      for(auto q5 : solveType2(0,1,zy)){
+          //const auto c5{cos(q5)};
+          const auto s5{sin(q5)};
+          for(auto q4 : solveType3(0,-s5,zx,s5,0,zz)){
+              //const auto c4{cos(q4)};
+              //const auto s4{sin(q4)};
+              for(auto q6 : solveType3(0,-s5,xy,s5,0,yy)){
+                addCandidate({q1,q2,q23-q2,q4,q5,q6});
+              }
+          }
+      }
+  }
   return bestCandidate(q0);
 }
 

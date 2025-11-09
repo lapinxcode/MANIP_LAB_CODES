@@ -65,18 +65,18 @@ int main(int argc, char ** argv)
         else if(robot->mode() == ControlMode::VELOCITY_MANUAL)
         {
             // follow a given operational velocity
-            v = robot->guiVelocityScrew();
-            vpColVector fVe(6);
+            v = robot->guiVelocityScrew(); // 6x1
+            vpColVector fVe(6); // 6x1
 
             // Exercise 2
             // DONE: fill the fJw function
-            // TODO: compute vCommand
+            // DONE: compute vCommand
 
-            auto fRe = M.getRotationMatrix();
+            auto fRe = M.getRotationMatrix(); // get fRe rotation matrix
 
             // Build fVe
-            ecn::putAt(fVe,(fRe*v.extract(0,3)),0);
-            ecn::putAt(fVe,(fRe*v.extract(3,3)),3);
+            ecn::putAt(fVe,(fRe*v.extract(0,3)),0); // Puts the 3x1 matrix (result from the product of fRe with the 3 first rows of v) in fVe
+            ecn::putAt(fVe,(fRe*v.extract(3,3)),3); // Puts the 3x1 matrix (result from the product of fRe with the 3 last rows of v) in fVe
 
             vCommand = robot->fJe(q).pseudoInverse() * fVe;
 
