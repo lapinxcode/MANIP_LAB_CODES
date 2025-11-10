@@ -74,7 +74,7 @@ vpColVector ecn::RobotKr16::inverseGeometry(const vpHomogeneousMatrix &Md, const
 
   auto q1 = atan2(-ty,tx);
   //const auto c1{cos(q1)};
-  const auto s1{sin(q1)};
+  auto s1{sin(q1)};
 
   // first solve position for (q1,q2,q3).
   for(auto [q2,q23] : solveType7(-0.67,0.035,(-ty/s1)-0.26,-tz+0.675,0.68,0)){
@@ -86,9 +86,9 @@ vpColVector ecn::RobotKr16::inverseGeometry(const vpHomogeneousMatrix &Md, const
       //const auto s3{sin(q3)};
 
       const auto c1{cos(q1)};
-      const auto c23{cos(q2+q3)};
+      const auto c23{cos(q23)};
       const auto s1{sin(q1)};
-      const auto s23{sin(q2+q3)};
+      const auto s23{sin(q23)};
 
       // then (inside the last for block) build R36 and solve it for (q4,q5,q6)
 

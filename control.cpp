@@ -1,4 +1,5 @@
 #include <ecn_manip/robot_init.h>
+#include <cmath>
 
 using namespace std;
 using namespace ecn;
@@ -57,7 +58,7 @@ int main(int argc, char ** argv)
         if(robot->mode() == ControlMode::POSITION_MANUAL)
         {
             // just check the Direct Geometric Model
-            // TODO: fill the fMw function
+            // DONE: fill the fMw function
             robot->checkPose(M);
         }
 
@@ -83,16 +84,13 @@ int main(int argc, char ** argv)
             robot->setJointVelocity(vCommand);
         }
 
-
         else if(robot->mode() == ControlMode::DIRECT_P2P)
         {
             // find the Inverse Geometry to reach Md
-            // TODO: fill the inverseGeometry function
+            // DONE: fill the inverseGeometry function
             qf = robot->inverseGeometry(Md, q);
             robot->setJointPosition(qf);
         }
-
-
 
 
         else if(robot->mode() == ControlMode::POLYNOM_P2P)
@@ -108,9 +106,21 @@ int main(int argc, char ** argv)
 
             }
 
+            // Exercise 4 -- DONE
+            auto dq = qf-q0;
+            // check for all tfs, for all joints
+            for(unsigned int i = 0; i < n; i++){
+               auto tf1 = 15*abs(dq[i])/(8*vMax[i]);
+               auto tf2 = sqrt(10*abs(dq[i])/(sqrt(3)*aMax[i]));
+
+               tf = max({tf,tf1,tf2}); // at each cycle, compare tf, tf1 and tf2 to find the greatest
+            }
+            // subtract t0 because it changes at each point of the trajectory
+            auto P = 10*(pow((t-t0)/tf,3))-15*(pow((t-t0)/tf,4))+6*(pow((t-t0)/tf,5));
 
 
             // TODO: compute qCommand from q0, qf, t, t0 and tf
+            qCommand = q0 + P*dq;
 
             robot->setJointPosition(qCommand);
         }
