@@ -92,7 +92,6 @@ int main(int argc, char ** argv)
             robot->setJointPosition(qf);
         }
 
-
         else if(robot->mode() == ControlMode::POLYNOM_P2P)
         {
             // reach Md with polynomial joint trajectory
@@ -125,7 +124,7 @@ int main(int argc, char ** argv)
             robot->setJointPosition(qCommand);
         }
 
-        // Exercise 5
+        // Exercise 5 -- DONE
         else if(robot->mode() == ControlMode::STRAIGHT_LINE_P2P)
         {
             // go from M0 to Md in 1 sec
@@ -142,14 +141,37 @@ int main(int argc, char ** argv)
             robot->setJointPosition(qCommand);
         }
 
-
+        // Exercise 6 --
         else if(robot->mode() == ControlMode::VELOCITY_P2P)
         {
+            // Compute the pose error in the desired frame
+            auto esMe = Md.inverse() * M;
+
+            // Declaring velocity screw vector
+            vpColVector fVe(6); // 6x1
+
+            // important variables
+            auto lambda = robot->lambda();
+            auto theta_u = (vpColVector)p.buildFrom(esMe).getThetaUVector(); // typecast to column vector
+            auto t_u = p.buildFrom(esMe).getTranslationVector();
+
+            // use rotation matrix
+            auto v = (-1) * lambda * Md.getRotationMatrix() * t_u ;
+            auto w = (-1) * lambda * M.getRotationMatrix() * theta_u;
+
+            // use putAt
+
+            // Build fVe
+            ecn::putAt(fVe,v,0); // Puts the 3x1 matrix (result from the product of fRe with the 3 first rows of v) in fVe
+            ecn::putAt(fVe,w,3); // Puts the 3x1 matrix (result from the product of fRe with the 3 last rows of v) in fVe
+
             // go to Md using operational velocity
 
+            // Normalize velocity to have constant velocity during the whole path
+            //fVe.normalize();
+
             // TODO: compute joint velocity command
-
-
+            vCommand = robot->fJe(q).pseudoInverse() * fVe;
 
             robot->setJointVelocity(vCommand);
         }
