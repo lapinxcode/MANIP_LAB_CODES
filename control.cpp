@@ -125,14 +125,19 @@ int main(int argc, char ** argv)
             robot->setJointPosition(qCommand);
         }
 
-
+        // Exercise 5
         else if(robot->mode() == ControlMode::STRAIGHT_LINE_P2P)
         {
             // go from M0 to Md in 1 sec
             tf = 1;
+            double alpha = 0;
 
             // TODO: compute qCommand from M0, Md, t, t0 and tf
             // use robot->intermediaryPose to build poses between M0 and Md
+
+            alpha = (t-t0)/tf;
+            auto intermediary_pose = robot->intermediaryPose(M0,Md,alpha);
+            qCommand = robot->inverseGeometry(intermediary_pose,q);
 
             robot->setJointPosition(qCommand);
         }
