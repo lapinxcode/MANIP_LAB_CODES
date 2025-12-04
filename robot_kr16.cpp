@@ -112,7 +112,7 @@ vpColVector ecn::RobotKr16::inverseGeometry(const vpHomogeneousMatrix &Md, const
               //const auto c4{cos(q4)};
               //const auto s4{sin(q4)};
               for(auto q6 : solveType3(0,-s5,xy,s5,0,yy)){
-                addCandidate({q1,q2,q23-q2,q4,q5,q6});
+                addCandidate({q1,q2,q3,q4,q5,q6});
               }
           }
       }

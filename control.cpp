@@ -168,9 +168,10 @@ int main(int argc, char ** argv)
             // go to Md using operational velocity
 
             // Normalize velocity to have constant velocity during the whole path
-            //fVe.normalize();
+            fVe.normalize();
+            // if condition to stop motion when it reaches close to the final dest
 
-            // TODO: compute joint velocity command
+            // DONE: compute joint velocity command
             vCommand = robot->fJe(q).pseudoInverse() * fVe;
 
             robot->setJointVelocity(vCommand);
